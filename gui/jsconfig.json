@@ -1,0 +1,10 @@
+{
+  "comment": {
+    "absoluteImports": "https://create-react-app.dev/docs/importing-a-component/#absolute-imports",
+    "jsconfigReference": "https://code.visualstudio.com/docs/languages/jsconfig"
+  },
+  "compilerOptions": {
+    "baseUrl": "src"
+  },
+  "include": ["src"]
+}
