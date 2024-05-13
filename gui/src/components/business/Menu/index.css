@@ -1,0 +1,9 @@
+.nav {
+    display: flex;
+    padding: 10px;
+}
+
+.toast {
+    min-width: auto;
+    width: auto!important;
+}

@@ -1,0 +1,22 @@
+.main {
+    flex: 1;
+    padding: 10px;
+
+    .card {
+        display: flex;
+        max-height: 100%;
+        overflow: hidden;
+        flex-direction: column;
+
+        .list {
+            flex: 1;
+            max-height: 100%;
+            overflow: hidden;
+        }
+
+        .action-button {
+            width: 2rem;
+            height: 2rem;
+        }
+    }
+}

@@ -1,0 +1,17 @@
+.brand {
+    display: flex;
+    font-size: large;
+    font-weight: bold;
+    align-items: center;
+    padding: 10px;
+
+    img {
+        width: 40px;
+        height: 40px;
+    }
+
+    span {
+        cursor: default;
+        margin-left: 5px;
+    }
+}
