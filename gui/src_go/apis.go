@@ -30,8 +30,10 @@ var fm *lib.ForwardManager
 
 func Startup(homedir string, autoopen bool) {
 
+    rootdir = homedir
+
     var err error
-    sm, err = NewSettingsManager(filepath.Join(homedir, "cfg"))
+    sm, err = NewSettingsManager(filepath.Join(rootdir, "cfg"))
     if err != nil {
         logger.Fatalln(err)
     }
@@ -46,7 +48,6 @@ func Startup(homedir string, autoopen bool) {
         logger.Fatalln(err)
     }
 
-    rootdir = homedir
     fp = filepath.Join(rootdir, "fwd")
 
     c, e := lib.NewConfigurationFromFile(fp)
@@ -133,7 +134,7 @@ func Startup(homedir string, autoopen bool) {
         logger.Fatalln(err)
     }
 
-    cfg.Pid = filepath.Join(homedir, "pid")
+    cfg.Pid = filepath.Join(rootdir, "pid")
     cfg.Ip = si.Ip
     cfg.Port = si.Port
     cfg.Icon = IconData
@@ -173,10 +174,20 @@ func Startup(homedir string, autoopen bool) {
 
     }
 
-    if launcher, err = l.NewWithConfig(cfg); err != nil {
+    var existingLauncher *l.ExistingLauncher
+    if launcher, existingLauncher, err = l.NewWithConfig(cfg); err != nil {
+        if existingLauncher != nil {
+            logger.Printf("listener: [%s].\n", existingLauncher.Addr)
+            existingLauncher.Open()
+            logger.Fatalln(err)
+        }
         cfg.Ip = ""
         cfg.Port = 0
-        if launcher, err = l.NewWithConfig(cfg); err != nil {
+        if launcher, existingLauncher, err = l.NewWithConfig(cfg); err != nil {
+            if existingLauncher != nil {
+                logger.Printf("listener: [%s].\n", existingLauncher.Addr)
+                existingLauncher.Open()
+            }
             logger.Fatalln(err)
         }
     }

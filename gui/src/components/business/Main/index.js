@@ -11,13 +11,12 @@ import {
     Dialog,
     Button,
     Tooltip,
-    Toolbar,
     Dropdown,
-    SpeedDial,
     InputText,
     InputIcon,
     IconField,
     InputNumber,
+    ContextMenu,
     InputTextarea,
     DataListTable,
 } from 'components/base';
@@ -25,6 +24,8 @@ import {
 import * as services from 'services';
 
 import './index.css';
+import Menu from '../Menu';
+import Brand from '../Brand';
 
 export default function Main() {
 
@@ -38,6 +39,7 @@ export default function Main() {
         description: ''
     };
 
+    const cm = useRef( null );
     const toast = useRef( null );
     const [errors, setErrors] = useState( null );
     const [forward, setForward] = useState( {} );
@@ -47,8 +49,7 @@ export default function Main() {
     const [globalFilter, setGlobalFilter] = useState( null );
     const [totalForwards, setTotalForwards] = useState( [] );
     const [forwardDialog, setForwardDialog] = useState( false );
-    const [speedDialModels, setSpeedDialModels] = useState( [] );
-    const [speedDialStatus, setSpeedDialStatus] = useState( {} );
+    const [selectedForward, setSelectedForward] = useState( null );
     const [selectedForwards, setSelectedForwards] = useState( [] );
     const [selectedProtocol, setSelectedProtocol] = useState( null );
     const [deleteForwardDialog, setDeleteForwardDialog] = useState( false );
@@ -252,35 +253,32 @@ export default function Main() {
     };
 
     const listTableHeader = () => {
+        let tooltipOptions = { showDelay: 800, showOnDisabled: true, position: 'bottom' };
         return (
             <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-                <h4 className="m-0">Manage Forwards</h4>
-                <span className="p-input-icon-left">
-                    <IconField iconPosition="left">
-                        <InputIcon className="pi pi-search" />
-                        <InputText onInput={( e ) => setGlobalFilter( e.target.value )} placeholder="Search..." />
-                    </IconField>
-                </span>
+                <Brand />
+                <div className="flex gap-2" style={{padding: 10, maxHeight: 60}}>
+                    <div className="flex flex-wrap gap-2">
+                        <Button label="New" severity="success" onClick={openNewForwardForm} tooltip="add a record" tooltipOptions={tooltipOptions} size="small" text />
+                        <Button label="Delete" severity="danger" onClick={confirmDeleteSelected} disabled={!selectedForwards || !selectedForwards.length} tooltip="delete the selected records" tooltipOptions={tooltipOptions} size="small" text />
+                        <Button label="Restart" severity="warning" onClick={() => restartForwards( [] )} disabled={!forwardList || !forwardList.length} tooltip="restart selected or all records" tooltipOptions={tooltipOptions} size="small" text />
+                        <Button label="Start" severity="info" onClick={() => startForwards( [] )} disabled={!forwardList || !forwardList.length} tooltip="start selected or all records" tooltipOptions={tooltipOptions} size="small" text />
+                        <Button label="Stop" severity="secondary" onClick={() => stopForwards( [] )} disabled={!forwardList || !forwardList.length} tooltip="stop selected or all records" tooltipOptions={tooltipOptions} size="small" text />
+                    </div>
+                    <Menu />
+                </div>
             </div>
         );
     };
 
-    const listTableLeftToolbar = () => {
+    const actionsHeader = () => {
         return (
-            <div className="flex flex-wrap gap-2">
-                <Button label="New" severity="success" onClick={openNewForwardForm} />
-                <Button label="Delete" severity="danger" onClick={confirmDeleteSelected} disabled={!selectedForwards || !selectedForwards.length} />
-            </div>
-        );
-    };
-
-    const listTableRightToolbar = () => {
-        return (
-            <div className="flex flex-wrap gap-2">
-                <Button label="Restart" severity="warning" onClick={() => restartForwards( [] )} disabled={!forwardList || !forwardList.length} />
-                <Button label="Start" severity="info" onClick={() => startForwards( [] )} disabled={!forwardList || !forwardList.length} />
-                <Button label="Stop" severity="secondary" onClick={() => stopForwards( [] )} disabled={!forwardList || !forwardList.length} />
-            </div>
+            <span className="p-input-icon-left">
+                <IconField iconPosition="left">
+                    <InputIcon className="pi pi-search" />
+                    <InputText onInput={( e ) => setGlobalFilter( e.target.value )} placeholder="Search..." />
+                </IconField>
+            </span>
         );
     };
 
@@ -311,54 +309,23 @@ export default function Main() {
         );
     };
 
+    const cmModel = [
+        { label: 'Restart the record', command: () => restartForwards( [selectedForward.id] ) },
+        { label: 'Start the record', command: () => startForwards( [selectedForward.id] ) },
+        { label: 'Stop the record', command: () => stopForwards( [selectedForward.id] ) },
+        { label: 'Telnet [Target Port] of the record', command: () => telnetTarget( selectedForward ) },
+    ];
+
     const dataActionBodyTemplate = ( rowData ) => {
-        let id = generateId();
-        let cn = `${id}_speeddial`;
+        let tooltipOptions = { showDelay: 800, showOnDisabled: true, position: 'bottom' };
         return (
             <div className='flex flex-wrap justify-content-end gap-2'>
-                <Button icon="pi pi-pencil" className="action-button" style={{ zIndex: speedDialStatus[rowData.id] ? -1 : 0 }} rounded outlined onClick={() => openEditForwardForm( rowData )} />
-                <Button icon="pi pi-trash" className="action-button" style={{ zIndex: speedDialStatus[rowData.id] ? -1 : 0 }} rounded outlined severity="danger" onClick={() => confirmDeleteForward( rowData )} />
-                {/* <Tooltip target={`.${cn} .p-speeddial-action`} position="top" visible={speedDialModels.length > 0} /> */}
-                <div className="flex align-items-center justify-content-center action-button" style={{ position: 'relative', zIndex: 0 }}>
-                    <SpeedDial
-                        style={{ top: 0, right: 0, bottom: 0 }}
-                        model={speedDialModels}
-                        direction="left"
-                        showIcon="pi pi-bars"
-                        hideIcon="pi pi-times"
-                        className={cn}
-                        buttonClassName="p-button-warning p-button-outlined action-button"
-                        onHide={() => {
-                            setSpeedDialModels( [] );
-                            setSpeedDialStatus( { [rowData.id]: false } );
-                        }}
-                        onShow={() => {
-                            setSpeedDialModels( [
-                                {
-                                    label: 'Restart',
-                                    icon: 'pi pi-spinner',
-                                    command: () => restartForwards( [rowData.id] )
-                                },
-                                {
-                                    label: 'Start',
-                                    icon: 'pi pi-circle-fill',
-                                    command: () => startForwards( [rowData.id] )
-                                },
-                                {
-                                    label: 'Stop',
-                                    icon: 'pi pi-stop',
-                                    command: () => stopForwards( [rowData.id] )
-                                },
-                                {
-                                    label: 'Telnet Target',
-                                    icon: 'pi pi-link',
-                                    command: () => telnetTarget( rowData )
-                                },
-                            ] );
-                            setSpeedDialStatus( { [rowData.id]: true } );
-                        }}
-                    />
-                </div>
+                <Button icon="pi pi-pencil" className="action-button" tooltip="edit the record" tooltipOptions={tooltipOptions} rounded outlined onClick={() => openEditForwardForm( rowData )} />
+                <Button icon="pi pi-trash" className="action-button" tooltip="delete the record" tooltipOptions={tooltipOptions} rounded outlined severity="danger" onClick={() => confirmDeleteForward( rowData )} />
+                <Button icon="pi pi-bars" className="action-button" tooltip="more actions" tooltipOptions={tooltipOptions} rounded outlined severity="warning" onClick={( e ) => {
+                    setSelectedForward( rowData );
+                    cm.current.show( e );
+                }} />
             </div>
         );
     };
@@ -402,23 +369,29 @@ export default function Main() {
         <div className="main">
             <Toast ref={toast} />
             <div className="card">
-                <Toolbar className="mb-4" start={listTableLeftToolbar} end={listTableRightToolbar} />
-
+                <ContextMenu model={cmModel} ref={cm} onHide={() => setSelectedForward( null )} />
                 <DataListTable
                     table={{
                         dataKey: 'id',
                         value: forwardList,
                         selection: selectedForwards,
+                        selectionMode: 'checkbox',
                         onSelectionChange: ( e ) => setSelectedForwards( e.value ),
                         header: listTableHeader,
                         scrollable: true,
                         scrollHeight: 'flex',
+                        removableSort: true,
+                        sortMode: 'multiple',
+                        multiSortMeta: [{field: 'source_port', order: 1}],
                         className: 'list',
                         emptyMessage: 'No results found',
                         paginator: true,
-                        rows: 10,
+                        rows: 15,
                         alwaysShowPaginator: false,
-                        rowsPerPageOptions: [5, 10, 25, 50],
+                        rowsPerPageOptions: [5, 15, 25, 50],
+                        onContextMenu: ( e ) => cm.current.show( e.originalEvent ),
+                        contextMenuSelection: selectedForward,
+                        onContextMenuSelectionChange: ( e ) => setSelectedForward( e.value )
                         // onRowMouseEnter: ( {index} ) => {
                         //     toggleRowHover( index, true );
                         // },
@@ -429,13 +402,13 @@ export default function Main() {
                     columns={[
                         { key: 'checkbox', field: 'id', selectionMode: 'multiple', exportable: false },
                         { key: 'index', headerStyle: { width: '3rem' }, header: '#', body: dataIndexBodyTemplate, style: { width: '4%' } },
-                        { key: 'source_addr', field: 'source_addr', header: 'Local Address', body: dataSourceAddrBodyTemplate, style: { width: '14%' } },
-                        { key: 'source_port', field: 'source_port', header: 'Local Port', style: { width: '9%' } },
-                        { key: 'target_addr', field: 'target_addr', header: 'Target Address', style: { width: '14%' } },
-                        { key: 'target_port', field: 'target_port', header: 'Target Port', style: { width: '9%' } },
+                        { key: 'source_addr', field: 'source_addr', sortable: true, header: 'Local Address', body: dataSourceAddrBodyTemplate, style: { width: '14%' } },
+                        { key: 'source_port', field: 'source_port', sortable: true, header: 'Local Port', style: { width: '9%' } },
+                        { key: 'target_addr', field: 'target_addr', sortable: true, header: 'Target Address', style: { width: '14%' } },
+                        { key: 'target_port', field: 'target_port', sortable: true, header: 'Target Port', style: { width: '9%' } },
                         { key: 'protocol', field: 'protocol', header: 'Target Protocol', style: { width: '10%' } },
                         { key: 'description', field: 'description', header: 'Description', body: dataDescriptionBodyTemplate, style: { width: '20%' } },
-                        { key: 'actions', body: dataActionBodyTemplate, style: { width: '20%' } },
+                        { key: 'actions', header: actionsHeader, headerClassName: 'actions-header', body: dataActionBodyTemplate, style: { width: '20%' } },
                     ]}
                 />
             </div>

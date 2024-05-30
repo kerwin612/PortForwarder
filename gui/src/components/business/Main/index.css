@@ -1,6 +1,6 @@
 .main {
     flex: 1;
-    padding: 10px;
+    /* padding: 10px; */
 
     .card {
         display: flex;
@@ -12,6 +12,18 @@
             flex: 1;
             max-height: 100%;
             overflow: hidden;
+
+            .p-menubar {
+                border: 0px!important;
+            }
+
+            .p-datatable-header {
+                padding: 0px!important;
+            }
+
+            .actions-header > .p-column-header-content {
+                justify-content: flex-end;
+            }
         }
 
         .action-button {

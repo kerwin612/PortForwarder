@@ -1,6 +1,10 @@
 .nav {
     display: flex;
-    padding: 10px;
+
+    .btn {
+        height: 40px;
+        width: 40px;
+    }
 }
 
 .toast {

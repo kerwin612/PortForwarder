@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "axios": "^1.6.8",
+    "axios": "^1.7.2",
     "primeflex": "^3.3.1",
     "primeicons": "^6.0.1",
-    "primereact": "^10.6.5",
+    "primereact": "^10.6.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-scripts": "5.0.1"
@@ -28,19 +28,64 @@
       "@stylistic/js"
     ],
     "rules": {
-      "@stylistic/js/semi": ["error", "always"],
-      "@stylistic/js/quotes": ["error", "single"],
-      "@stylistic/js/no-tabs": ["error"],
-      "@stylistic/js/wrap-iife": ["error", "inside"],
-      "@stylistic/js/arrow-spacing": ["error", { "before": true, "after": true }],
-      "@stylistic/js/keyword-spacing": ["error", { "before": true, "after": true }],
-      "@stylistic/js/linebreak-style": ["error", "unix"],
-      "@stylistic/js/space-in-parens": ["error", "always"],
-      "@stylistic/js/space-infix-ops": ["error"],
-      "@stylistic/js/space-unary-ops": ["error"],
-      "@stylistic/js/space-before-blocks": ["error"],
-      "@stylistic/js/rest-spread-spacing": ["error", "never"],
-      "@stylistic/js/space-before-function-paren": ["error", { "named": "never", "anonymous": "never", "asyncArrow": "always" }]
+      "@stylistic/js/semi": [
+        "error",
+        "always"
+      ],
+      "@stylistic/js/quotes": [
+        "error",
+        "single"
+      ],
+      "@stylistic/js/no-tabs": [
+        "error"
+      ],
+      "@stylistic/js/wrap-iife": [
+        "error",
+        "inside"
+      ],
+      "@stylistic/js/arrow-spacing": [
+        "error",
+        {
+          "before": true,
+          "after": true
+        }
+      ],
+      "@stylistic/js/keyword-spacing": [
+        "error",
+        {
+          "before": true,
+          "after": true
+        }
+      ],
+      "@stylistic/js/linebreak-style": [
+        "error",
+        "unix"
+      ],
+      "@stylistic/js/space-in-parens": [
+        "error",
+        "always"
+      ],
+      "@stylistic/js/space-infix-ops": [
+        "error"
+      ],
+      "@stylistic/js/space-unary-ops": [
+        "error"
+      ],
+      "@stylistic/js/space-before-blocks": [
+        "error"
+      ],
+      "@stylistic/js/rest-spread-spacing": [
+        "error",
+        "never"
+      ],
+      "@stylistic/js/space-before-function-paren": [
+        "error",
+        {
+          "named": "never",
+          "anonymous": "never",
+          "asyncArrow": "always"
+        }
+      ]
     }
   },
   "browserslist": {
@@ -56,6 +101,6 @@
     ]
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin-js": "^2.0.0"
+    "@stylistic/eslint-plugin-js": "^2.1.0"
   }
 }

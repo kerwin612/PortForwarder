@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 
-import { Tag, Button, Dialog, Tooltip, Message, Dropdown, InputText, InputNumber, SplitButton } from 'components/base';
+import { Tag, Menu, Button, Dialog, Tooltip, Message, Dropdown, InputText, InputNumber } from 'components/base';
 import { IPS, exit, getSettings, saveSettings, explorerWS } from 'services';
 import './index.css';
 
 export default function NavBar() {
+    const menuRight = useRef( null );
     const [hostInvalid, setHostInvalid] = useState( false );
     const [portInvalid, setPortInvalid] = useState( false );
     const [settings, setSettings] = useState( {} );
@@ -42,6 +43,13 @@ export default function NavBar() {
             command: () => {
                 setAboutDialog( true );
             }
+        },
+        {
+            label: 'Quit',
+            command: () => {
+                exit();
+                setByeDialog( true );
+            }
         }
     ];
 
@@ -72,11 +80,9 @@ export default function NavBar() {
         closeSuccess();
     };
     return (
-        <div className="nav card flex justify-content-center">
-            <SplitButton label={<span>Quit</span>} model={items} size="small" severity="secondary" outlined onClick={() => {
-                exit();
-                setByeDialog( true );
-            }} />
+        <div className="nav flex justify-content-center">
+            <Menu model={items} popup ref={menuRight} id="popup_menu_right" popupAlignment="right" />
+            <Button className="btn" icon="pi pi-ellipsis-h" size="small" severity="secondary" rounded  onClick={( event ) => menuRight.current.toggle( event )} aria-controls="popup_menu_right" aria-haspopup />
             <Dialog visible={aboutDialog} resizable={false} draggable={false} style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} header="About" modal className="p-fluid" onHide={() => { setAboutDialog( false ); }}>
                 <div>PortForwarder is a lightweight, single-purpose utility for forwarding local ports to destination ports without installation.</div>
                 <div className="flex justify-content-center align-items-center gap-2" style={{marginTop: '32px'}}>

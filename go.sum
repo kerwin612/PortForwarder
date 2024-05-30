@@ -36,6 +36,8 @@ github.com/google/go-cmp v0.5.8/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeN
 github.com/gorilla/websocket v1.5.1/go.mod h1:x3kM2JMyaluk02fnUJpQuwD2dCS5NDG2ZHL0uE0tcaY=
 github.com/kerwin612/hybrid-launcher v0.0.7 h1:Vrwbydn+TpHeGM0Z6SHIM0CLJgpnhN3mrcr3zXo8W/c=
 github.com/kerwin612/hybrid-launcher v0.0.7/go.mod h1:U2KOmgYMrUbP8MmkNSUwH5OlcQ7P4A0rjyisiIPf77Q=
+github.com/kerwin612/hybrid-launcher v0.0.8 h1:A0nENnlzvNJibANF6GsB/47A5aT+4C+AaWnpLDywbGw=
+github.com/kerwin612/hybrid-launcher v0.0.8/go.mod h1:U2KOmgYMrUbP8MmkNSUwH5OlcQ7P4A0rjyisiIPf77Q=
 github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORNo=
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
