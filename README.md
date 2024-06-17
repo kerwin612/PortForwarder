@@ -1,5 +1,8 @@
 # PortForwarder
- **PortForwarder is a lightweight, single-purpose utility for forwarding local ports to destination ports without installation.**
+ **PortForwarder is a lightweight, single-purpose utility for forwarding local ports to destination ports without installation.**  
+
+## Download
+> [Releases](https://github.com/kerwin612/PortForwarder/releases)
 
 ## Developer Guide (GUI)
 > For Windows users, it will only support **Win10+** operating systems.
