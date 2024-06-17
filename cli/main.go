@@ -2,7 +2,7 @@ package main
 
 import (
     "os"
-    "fmt"
+    "log"
     "flag"
     "errors"
     "strings"
@@ -49,19 +49,21 @@ func parseTarget(s string) (string, string, int, error) {
 }
 
 func main() {
-    source := flag.String("s", "", "Source Addr: addr:port")
-    target := flag.String("t", "", "Target Addr: protocol:addr:port")
+    source := flag.String("s", "", "Source Addr: [addr]<:port>")
+    target := flag.String("t", "", "Target Addr: <protocol:addr:port>")
 
     flag.Parse()
 
     source_addr, source_port, err := parseSource(*source)
     if err != nil {
-        panic(err)
+        flag.PrintDefaults()
+        log.Fatal("Source Addr Error: ", err)
     }
 
     protocol, target_addr, target_port, err := parseTarget(*target)
     if err != nil {
-        panic(err)
+        flag.PrintDefaults()
+        log.Fatal("Target Addr Error: ", err)
     }
 
     ln, err := core.Forward(core.Info{
@@ -72,15 +74,15 @@ func main() {
         Protocol:    protocol,
     })
     if err != nil {
-        panic(err)
+        log.Fatal("Forward Error: ", err)
     }
-    fmt.Printf("Forwarded: [[%s]] ==>> [[%s]]\n", *source, *target)
+    log.Printf("Forwarded: [[%s]] ==>> [[%s]]\n", *source, *target)
 
     sigs := make(chan os.Signal, 1)
     signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
     sig := <-sigs
-    fmt.Printf("Received signal: %s, shutting down...\n", sig)
+    log.Printf("Received signal: %s, shutting down...\n", sig)
 
     ln.Close()
     os.Exit(0)

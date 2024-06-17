@@ -302,8 +302,8 @@ export default function Main() {
         return (
             <>
                 <Tooltip target={`.${cn}`} position="mouse" showDelay={300} autoHide={false} style={{maxWidth: '30vw'}}/>
-                <div className={cn} data-pr-tooltip={rowData.description} style={{maxWidth: '20vw', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>
-                    {rowData.description}
+                <div style={{maxWidth: '20vw', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>
+                    <span className={cn} data-pr-tooltip={rowData.description}>{rowData.description}</span>
                 </div>
             </>
         );
