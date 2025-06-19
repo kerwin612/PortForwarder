@@ -1,6 +1,6 @@
 {
   "name": "port-forwarder",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "dependencies": {
     "axios": "^1.7.2",
@@ -14,11 +14,14 @@
   "scripts": {
     "start:app": "node ./build.js app",
     "start:gui": "node ./build.js gui",
-    "build": "node ./build.js build-all",
+    "prestart:gui": "npm run sync-icons",
+    "build": "node ./build.js build-all", 
     "build:app": "node ./build.js build-app",
     "build:gui": "node ./build.js build-gui",
+    "prebuild:gui": "npm run sync-icons",
     "lint": "eslint ./build.js ./src",
-    "lint:fix": "eslint ./build.js ./src --fix"
+    "lint:fix": "eslint ./build.js ./src --fix",
+    "sync-icons": "node -e \"const fs = require('fs'); fs.copyFileSync('../ico/icon.png', './src/components/business/Brand/icon.png'); fs.copyFileSync('../ico/icon.ico', './public/favicon.ico');\""
   },
   "eslintConfig": {
     "extends": [

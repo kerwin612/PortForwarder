@@ -235,15 +235,45 @@ func _settings_save(w http.ResponseWriter, r *http.Request) {
 }
 
 func _telnet(w http.ResponseWriter, r *http.Request) {
-    port, err := strconv.Atoi(r.PathValue("port"))
-    if err != nil {
-        _writeError(w, err)
-    } else {
-        if ok, err := core.Telnet(r.PathValue("protocol"), r.PathValue("ip"), port, 5 * 1000); !ok {
-            _writeError(w, err)
-        } else {
-            _writeString(w, "success")
+    timeout, err := strconv.Atoi(r.URL.Query().Get("timeout"))
+    if err != nil || timeout <= 0 {
+        timeout = 3000 // Default 3 second timeout
+    }
+    
+    protocol := r.PathValue("protocol")
+    if protocol == "" {
+        protocol = "tcp" // Default TCP protocol
+    }
+    
+    ip := r.PathValue("ip")
+    port, _ := strconv.Atoi(r.PathValue("port"))
+    
+    // Record test information
+    logger.Printf("Telnet test request: %s://%s:%d (timeout: %dms)", protocol, ip, port, timeout)
+    
+    // Add multiple retries to ensure it's not a temporary network issue
+    maxRetries := 3
+    var lastErr error
+    
+    for i := 0; i < maxRetries; i++ {
+        success, err := core.Telnet(protocol, ip, port, timeout)
+        if success {
+            _writeString(w, "true")
+            return
         }
+        lastErr = err
+        logger.Printf("Telnet attempt %d failed: %v", i+1, err)
+        time.Sleep(time.Millisecond * 200) // Wait 200ms between retries
+    }
+    
+    // Log more detailed network information after all attempts fail
+    logger.Printf("All telnet attempts failed to %s:%d. Last error: %v", ip, port, lastErr)
+    
+    // Return error information
+    if lastErr != nil {
+        _writeString(w, fmt.Sprintf("false|%v", lastErr))
+    } else {
+        _writeString(w, "false")
     }
 }
 

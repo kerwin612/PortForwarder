@@ -1,4 +1,3 @@
-
 import React, {
     useRef,
     useState,
@@ -283,8 +282,15 @@ export default function Main() {
     };
 
     const dataIndexBodyTemplate = ( rowData, options ) => {
+        let id = rowData.id;
+        let tooltipId = `index_tooltip_${options.rowIndex}`;
         return (
-            <Badge value={options.rowIndex + 1} severity={rowData.status === 2 ? 'success' : 'secondary'} />
+            <>
+                <Tooltip target={`.${tooltipId}`} position="right" showDelay={300} hideDelay={100} style={{maxWidth: '18rem'}} />
+                <div style={{cursor: 'default'}}>
+                    <Badge className={tooltipId} data-pr-tooltip={`ID: ${id}`} value={options.rowIndex + 1} severity={rowData.status === 2 ? 'success' : 'secondary'} />
+                </div>
+            </>
         );
     };
 
@@ -310,10 +316,10 @@ export default function Main() {
     };
 
     const cmModel = [
-        { label: 'Restart the record', command: () => restartForwards( [selectedForward.id] ) },
+        { label: 'Telnet [Target Port] of the record', command: () => telnetTarget( selectedForward ) },
         { label: 'Start the record', command: () => startForwards( [selectedForward.id] ) },
         { label: 'Stop the record', command: () => stopForwards( [selectedForward.id] ) },
-        { label: 'Telnet [Target Port] of the record', command: () => telnetTarget( selectedForward ) },
+        { label: 'Delete the record', command: () => confirmDeleteForward( selectedForward ) },
     ];
 
     const dataActionBodyTemplate = ( rowData ) => {
@@ -321,8 +327,8 @@ export default function Main() {
         return (
             <div className='flex flex-wrap justify-content-end gap-2'>
                 <Button icon="pi pi-pencil" className="action-button" tooltip="edit the record" tooltipOptions={tooltipOptions} rounded outlined onClick={() => openEditForwardForm( rowData )} />
-                <Button icon="pi pi-trash" className="action-button" tooltip="delete the record" tooltipOptions={tooltipOptions} rounded outlined severity="danger" onClick={() => confirmDeleteForward( rowData )} />
-                <Button icon="pi pi-bars" className="action-button" tooltip="more actions" tooltipOptions={tooltipOptions} rounded outlined severity="warning" onClick={( e ) => {
+                <Button icon="pi pi-replay" className="action-button" tooltip="restart the record" tooltipOptions={tooltipOptions} rounded outlined severity="warning" onClick={() => restartForwards( [rowData.id] )} />
+                <Button icon="pi pi-bars" className="action-button" tooltipOptions={tooltipOptions} rounded outlined severity="secondary" onMouseEnter={( e ) => {
                     setSelectedForward( rowData );
                     cm.current.show( e );
                 }} />
